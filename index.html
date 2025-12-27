@@ -1,11 +1,105 @@
-<!DOCTYPE HTML>
-<HTML>
-  <HEAD>
-    <TITLE>MY FIRST SITE</TITLE>
-    <STYLE>
-    BODY { TEXT-ALIGN: CENTER; PADDING: 50PX; FONT-FAMILY: ARIAL;}
-      H1 { COLOR: GREEN}
-    </STYLE>
-  </HEAD>
-</HTML>
-      أول ملف HTML...
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مصحح النصوص العربي</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #4A90E2;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 16px;
+            resize: none;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: #357ABD;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #4A90E2;
+            border-radius: 5px;
+            background-color: #e7f3fe;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            button {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>مصحح النصوص العربي</h1>
+        <textarea placeholder="اكتب نصك هنا..."></textarea>
+        <button onclick="checkText()">صحح</button>
+        <div class="result" id="result" style="display:none;">
+            <h3>النتيجة:</h3>
+            <p id="correctedText"></p>
+        </div>
+    </div>
+
+    <script>
+        function checkText() {
+            const textArea = document.querySelector('textarea');
+            const resultDiv = document.getElementById('result');
+            const correctedText = document.getElementById('correctedText');
+
+            // هنا يمكنك إضافة منطق تصحيح النصوص الخاص بك
+            // كمثال بسيط، سنقوم فقط بعكس النص المدخل
+            const text = textArea.value;
+            correctedText.textContent = text.split('').reverse().join('');
+            resultDiv.style.display = 'block';
+        }
+    </script>
+
+</body>
+</html>
