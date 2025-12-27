@@ -1,105 +1,67 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مصحح النصوص العربي</title>
+    <title>مصحح النصوص</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 2.5em;
-            color: #4A90E2;
-            margin-bottom: 20px;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        textarea {
-            width: 100%;
-            height: 200px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            font-size: 16px;
-            resize: none;
-        }
-
-        button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background-color: #4A90E2;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 18px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-
-        button:hover {
-            background-color: #357ABD;
-        }
-
-        .result {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #4A90E2;
-            border-radius: 5px;
-            background-color: #e7f3fe;
-        }
-
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 2em;
-            }
-
-            button {
-                font-size: 16px;
-            }
-        }
+        body { font-family: Arial; text-align: center; padding: 30px; }
+        textarea { width: 90%; height: 150px; margin: 15px; padding: 10px; }
+        button { padding: 12px 24px; background: #0ea5e9; color: white; border: none; cursor: pointer; }
+        #result { margin: 20px auto; max-width: 90%; }
     </style>
 </head>
 <body>
-
-    <div class="container">
-        <h1>مصحح النصوص العربي</h1>
-        <textarea placeholder="اكتب نصك هنا..."></textarea>
-        <button onclick="checkText()">صحح</button>
-        <div class="result" id="result" style="display:none;">
-            <h3>النتيجة:</h3>
-            <p id="correctedText"></p>
-        </div>
-    </div>
+    <h1>مصحح النصوص العربي</h1>
+    <textarea id="userText" placeholder="اكتب نصك هنا..."></textarea>
+    <br>
+    <button onclick="correctText()">صحح النص</button>
+    <div id="result"></div>
 
     <script>
-        function checkText() {
-            const textArea = document.querySelector('textarea');
-            const resultDiv = document.getElementById('result');
-            const correctedText = document.getElementById('correctedText');
+        const apiKey = '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';
 
-            // هنا يمكنك إضافة منطق تصحيح النصوص الخاص بك
-            // كمثال بسيط، سنقوم فقط بعكس النص المدخل
-            const text = textArea.value;
-            correctedText.textContent = text.split('').reverse().join('');
-            resultDiv.style.display = 'block';
+        async function correctText() {
+            const userText = document.getElementById('userText').value.trim();
+            const resultDiv = document.getElementById('result');
+            
+            if (!userText) {
+                resultDiv.innerHTML = '<p>ادخل نصاً أولاً.</p>';
+                return;
+            }
+            
+            if (!apiKey) {
+                resultDiv.innerHTML = '<p>أضيفي مفتاح API.</p>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<p>جاري التصحيح...</p>';
+            
+            try {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': Bearer ${apiKey}
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: [{
+                            role: 'user',
+                            content: صحح الأخطاء في النص العربي التالي وأعد النص المصحح فقط: ${userText}
+                        }],
+                        temperature: 0.3
+                    })
+                });
+                
+                if (!response.ok) throw new Error('خطأ في الطلب');
+                
+                const data = await response.json();
+                const correctedText = data.choices[0].message.content;
+                resultDiv.innerHTML = <div><strong>النص المصحح:</strong><p>${correctedText}</p></div>;
+                
+            } catch (error) {
+                resultDiv.innerHTML = <p>حدث خطأ: ${error.message}</p>;
+            }
         }
     </script>
-
 </body>
 </html>
