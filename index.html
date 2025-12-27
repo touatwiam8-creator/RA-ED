@@ -880,7 +880,7 @@
         
         document.addEventListener('DOMContentLoaded', function() {
             // اختبار الاتصال بـ GAS
-            if (GAS_URL && GAS_URL !== 'ضع_رابط_Google_Apps_Script_هنا') {
+            if (GAS_URL && GAS_URL !== 'https://script.google.com/macros/s/AKfycbxUslzampkNyLvucNCdtz01b_m3CaoEVNJtgIpVHcCIsmy5ZTMhXMCWOi4ViL2QqmC4fQ/exec') {
                 fetch(GAS_URL + '?test=1')
                     .then(response => response.json())
                     .then(data => {
