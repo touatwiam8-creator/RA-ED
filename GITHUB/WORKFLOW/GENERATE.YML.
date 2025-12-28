@@ -14,6 +14,9 @@ jobs:
     env:
       API_KEY: ${{ secrets.API_key }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Call DeepSeek
         id: call_ai
         run: |
@@ -25,10 +28,15 @@ jobs:
               "messages":[{"role":"user","content":"${{ github.event.inputs.prompt }}"}]
             }' | jq -r '.choices[0].message.content')
           echo "{\"text\":\"$RESPONSE\"}" > random_text.json
+
       - name: Commit result
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          git add random_text.json
+          git commit -m "Update generated text"
+          git push
+
           git add random_text.json
           git commit -m "Update generated text"
           git push
