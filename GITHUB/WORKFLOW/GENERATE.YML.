@@ -23,9 +23,14 @@ jobs:
             -d '{
               "model":"deepseek-chat",
               "messages":[{"role":"user","content":"${{ github.event.inputs.prompt }}"}]
-            }')
-          echo "::set-output name=text::$RESPONSE"
+            }' | jq -r '.choices[0].message.content')
+          echo "{\"text\":\"$RESPONSE\"}" > random_text.json
+      - name: Commit result
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add random_text.json
+          git commit -m "Update generated text"
+          git push
 
-      - name: Save result
-        run: echo "${{ steps.call_ai.outputs.text }}" > result.txt
 
