@@ -1,89 +1,70 @@
+
 <!DOCTYPE html>
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>منصة رائد - تمارين تفاعلية</title>
+<title>منصة رائد</title>
 <style>
-body { font-family: Arial, sans-serif; background-color: #f0f4f8; color: #111; margin:0; padding:0; direction: rtl; }
-header { background-color: #2563eb; color: white; padding: 15px; text-align: center; font-size: 1.5em; }
-.container { padding: 20px; max-width: 800px; margin: auto; }
-button { background-color: #2563eb; color: white; border: none; padding: 10px 20px; margin:5px; cursor: pointer; border-radius:5px; font-size:1em; }
-button:hover { background-color: #1d4ed8; }
-textarea { width: 100%; height: 150px; padding: 10px; font-size: 1em; margin-top:10px; }
-.result { background-color: #e0e7ff; padding: 15px; margin-top: 15px; border-radius:5px; animation: fadeIn 0.5s; }
-@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+  body { font-family: Arial, sans-serif; direction: rtl; padding: 20px; background: #f5f7fa; }
+  h1 { color: #2563eb; text-align: center; }
+  .container { max-width: 700px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+  label { display: block; margin-top: 15px; font-weight: bold; }
+  select, textarea, button { width: 100%; margin-top: 10px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
+  button { background: #2563eb; color: white; border: none; cursor: pointer; transition: 0.3s; }
+  button:hover { background: #1d4ed8; }
+  #result { margin-top: 20px; background: #e0f2fe; padding: 15px; border-radius: 5px; white-space: pre-wrap; }
 </style>
 </head>
 <body>
-<header>منصة رائد - تمارين تفاعلية</header>
 <div class="container">
-  <div id="mainMenu">
-    <h2>اختر المعمل</h2>
-    <button onclick="startExercise('الوقت')">معمل الوقت</button>
-    <button onclick="startExercise('التواصل')">معمل التواصل</button>
-    <button onclick="startExercise('الكتابة')">معمل الكتابة</button>
-    <button onclick="startExercise('المبيعات')">معمل المبيعات</button>
-  </div>
+  <h1>منصة رائد</h1>
+  <label for="skill">اختر المعمل:</label>
+  <select id="skill">
+    <option value="الكتابة الإبداعية">الكتابة الإبداعية</option>
+    <option value="المبيعات والتسويق">المبيعات والتسويق</option>
+    <option value="إدارة الوقت">إدارة الوقت</option>
+    <option value="إدارة المشاريع">إدارة المشاريع</option>
+  </select>
 
-  <div id="exerciseArea" style="display:none;">
-    <h2 id="skillTitle"></h2>
-    <p id="scenarioText">تحميل السيناريو...</p>
-    <textarea id="userAnswer" placeholder="اكتب إجابتك هنا..."></textarea>
-    <button onclick="submitAnswer()">إرسال الإجابة</button>
-    <div id="evaluation" class="result" style="display:none;"></div>
-    <button onclick="backToMenu()">العودة للقائمة</button>
-  </div>
+  <label for="answer">أدخل إجابتك هنا:</label>
+  <textarea id="answer" rows="6" placeholder="اكتب إجابتك..."></textarea>
+
+  <button onclick="sendAnswer()">إرسال الإجابة</button>
+
+  <div id="result"></div>
 </div>
 
 <script>
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbzBCxknWqi-0hY2B8M7wb9Gj1mHXobB8LmIk9oAUMsQWEpZQ4PdCeTPRBEKYp6YmOlF/exec';
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbzBCxknWqi-0hY2B8M7wb9Gj1mHXobB8LmIk9oAUMsQWEpZQ4PdCeTPRBEKYp6YmOlF/exec";
 
-function startExercise(skill){
-  document.getElementById('mainMenu').style.display = 'none';
-  document.getElementById('exerciseArea').style.display = 'block';
-  document.getElementById('skillTitle').innerText = `المهارة: ${skill}`;
-  document.getElementById('scenarioText').innerText = 'جارٍ تحميل السيناريو...';
+  async function sendAnswer() {
+    const skill = document.getElementById("skill").value;
+    const answer = document.getElementById("answer").value;
+    const resultDiv = document.getElementById("result");
 
-  // طلب السيناريو من GAS
-  fetch(GAS_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'getScenario', skill: skill })
-  })
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById('scenarioText').innerText = data.scenario;
-  })
-  .catch(err => { document.getElementById('scenarioText').innerText = 'حدث خطأ أثناء تحميل السيناريو.'; });
-}
+    if (!answer.trim()) {
+      resultDiv.textContent = "الرجاء كتابة إجابتك أولاً.";
+      return;
+    }
 
-function submitAnswer(){
-  const answer = document.getElementById('userAnswer').value;
-  const skill = document.getElementById('skillTitle').innerText.replace('المهارة: ', '');
-  document.getElementById('evaluation').style.display = 'block';
-  document.getElementById('evaluation').innerText = 'جارٍ إرسال الإجابة والتقييم...';
+    resultDiv.textContent = "جارٍ إرسال الإجابة...";
 
-  fetch(GAS_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'evaluate', skill: skill, answer: answer })
-  })
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById('evaluation').innerHTML = `<b>التقييم النهائي:</b><br>${data.evaluation}`;
-  })
-  .catch(err => {
-    document.getElementById('evaluation').innerText = 'حدث خطأ أثناء التقييم.';
-  });
-}
+    try {
+      const response = await fetch(GAS_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ skill: skill, answer: answer })
+      });
 
-function backToMenu(){
-  document.getElementById('mainMenu').style.display = 'block';
-  document.getElementById('exerciseArea').style.display = 'none';
-  document.getElementById('userAnswer').value = '';
-  document.getElementById('evaluation').style.display = 'none';
-}
+      if (!response.ok) throw new Error("خطأ في التواصل مع الخادم");
+
+      const data = await response.json();
+      resultDiv.textContent = data.evaluation || "لم يتم استلام التقييم.";
+    } catch (err) {
+      resultDiv.textContent = "حدث خطأ أثناء تحميل الإجابة 💔\n" + err;
+    }
+  }
 </script>
 </body>
 </html>
