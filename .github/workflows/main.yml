@@ -1,0 +1,38 @@
+name: AI Evaluation
+
+on:
+  workflow_dispatch:
+    inputs:
+      user_answer:
+        description: "User answer to evaluate"
+        required: true
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    env:
+      API_KEY: ${{ secrets.API_key }}
+
+    steps:
+      - name: Evaluate with AI
+        run: |
+          RESPONSE=$(curl -s https://api.deepseek.com/chat/completions \
+            -H "Authorization: Bearer $API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"model\": \"deepseek-chat\",
+              \"messages\": [
+                {\"role\": \"system\", \"content\": \"Evaluate the following answer objectively. Give strengths, weaknesses, and a percentage score.\"},
+                {\"role\": \"user\", \"content\": \"${{ github.event.inputs.user_answer }}\"}
+              ]
+            }")
+
+          echo "$RESPONSE" > evaluation.json
+
+      - name: Save result
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add evaluation.json
+          git commit -m "AI evaluation result"
+          git push
